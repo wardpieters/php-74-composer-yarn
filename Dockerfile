@@ -1,5 +1,6 @@
-FROM php:7.4
+FROM php:7.4-cli
 
+RUN apt-get update && apt-get install -y curl sudo zip unzip git
 
 # Install composer and put binary into $PATH
 RUN curl -sS https://getcomposer.org/installer | php \
@@ -7,11 +8,9 @@ RUN curl -sS https://getcomposer.org/installer | php \
     && ln -s /usr/local/bin/composer.phar /usr/local/bin/composer
 
 # Install Node.js & Yarn
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
-    && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-    && curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
-    && apt-get install -y nodejs build-essential yarn \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+RUN apt-get install -y nodejs
+RUN npm install -g yarn
 
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
